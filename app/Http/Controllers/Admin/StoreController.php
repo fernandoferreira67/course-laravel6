@@ -10,14 +10,22 @@ use App\Http\Requests\StoreRequest;
 
 class StoreController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('user.has.store')->only(['create','store']);
+
+    }
     public function index()
     {
         /*Method Normal
         $stores = \App\Store::all();*/
 
         //Trazer dados paginados
-        $stores = \App\Store::paginate(10);
-        return view('admin.stores.index',compact('stores'));
+        //$stores = \App\Store::paginate(10);
+
+        //Trazer relação do user com  loja 1:1
+        $store = auth()->user()->store;
+        return view('admin.stores.index',compact('store'));
     }
 
     public function create(){
@@ -41,6 +49,7 @@ class StoreController extends Controller
         flash('Loja Criada com Sucesso')->success();
         return redirect()->route('admin.stores.index');
         */
+
 
         $data = $request->all();
         $user = auth()->user();
