@@ -24,6 +24,8 @@ class StoreController extends Controller
 
     public function store(Request $request)
     {
+        /*
+        //Method criar loja e escolher qual usuário cadastra loja
         //Pegar dados do Request
         $data = $request->all();
 
@@ -31,6 +33,14 @@ class StoreController extends Controller
         $user = \App\User::find($data['user']);
 
         //Ligação entre  1:1 User e Store
+        $store = $user->store()->create($data);
+
+        flash('Loja Criada com Sucesso')->success();
+        return redirect()->route('admin.stores.index');
+        */
+
+        $data = $request->all();
+        $user = auth()->user();
         $store = $user->store()->create($data);
 
         flash('Loja Criada com Sucesso')->success();

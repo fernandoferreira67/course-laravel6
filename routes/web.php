@@ -13,7 +13,7 @@
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('home');
 
 
 Route::get('/model', function () {
@@ -136,7 +136,8 @@ Route::prefix('admin')->namespace('Admin')->group(function(){
 */
 
 /*Rotas Resumidas com Apelido - Namespace*/
-Route::prefix('admin')->name('admin.')->namespace('Admin')->group(function(){
+
+//Route::prefix('admin')->name('admin.')->namespace('Admin')->group(function(){
 
         /*ROUTE STORES*/
         /*
@@ -149,9 +150,25 @@ Route::prefix('admin')->name('admin.')->namespace('Admin')->group(function(){
             Route::get('/destroy/{store}', 'StoreController@destroy')->name('destroy');
         });*/
 
-        Route::resource('stores', 'StoreController');
+        //Route::resource('stores', 'StoreController');
 
         /*Products - Rotas com Resource*/
+        //Route::resource('products','ProductController');
+
+//});
+
+/*Rotas com Middleware de Login -  Checkar se rota administrativas os users estão logados */
+Route::group(['middleware'=>['auth']], function(){
+    Route::prefix('admin')->name('admin.')->namespace('Admin')->group(function(){
+
+        Route::resource('stores', 'StoreController');
         Route::resource('products','ProductController');
+    });
 
 });
+
+
+
+Auth::routes();
+
+//Route::get('/home', 'HomeController@index')->name('home');
