@@ -138,6 +138,8 @@ Route::prefix('admin')->namespace('Admin')->group(function(){
 /*Rotas Resumidas com Apelido - Namespace*/
 Route::prefix('admin')->name('admin.')->namespace('Admin')->group(function(){
 
+        /*ROUTE STORES*/
+        /*
         Route::prefix('stores')->name('stores.')->group(function(){
             Route::get('/', 'StoreController@index')->name('index');
             Route::get('/create', 'StoreController@create')->name('create');
@@ -145,7 +147,9 @@ Route::prefix('admin')->name('admin.')->namespace('Admin')->group(function(){
             Route::get('/{store}/edit', 'StoreController@edit')->name('edit');
             Route::post('/update/{store}', 'StoreController@update')->name('update');
             Route::get('/destroy/{store}', 'StoreController@destroy')->name('destroy');
-        });
+        });*/
+
+        Route::resource('stores', 'StoreController');
 
         /*Products - Rotas com Resource*/
         Route::resource('products','ProductController');
