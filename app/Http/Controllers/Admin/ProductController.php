@@ -29,7 +29,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products =  $this->product->paginate(10);
+        $userStore = auth()->user()->store;
+        $products =  $userStore->products()->paginate(10);
 
         return view('admin.products.index', compact('products'));
     }
@@ -41,8 +42,9 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $stores = \App\Store::all(['id','name']);
-        return view('admin.products.create', compact('stores'));
+        //$stores = \App\Store::all(['id','name']);
+        $categories = \App\Category::all(['id','name']);
+        return view('admin.products.create', compact('categories'));
     }
 
     /**
@@ -53,11 +55,13 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
+        //Salvar Usando metodo Sync
         $data = $request->all();
 
         //$store = \App\Store::find($data['store']);
         $store = auth()->user()->store;
-        $store->products()->create($data);
+        $product = $store->products()->create($data);
+        $product->categories()->sync($data['categories']);
 
         flash('Produto Criado com Sucesso')->success();
         return redirect()->route('admin.products.index');
@@ -84,7 +88,9 @@ class ProductController extends Controller
     public function edit($product)
     {
         $product = $this->product->findOrFail($product);
-        return view('admin.products.edit', compact('product'));
+        $categories = \App\Category::all(['id','name']);
+
+        return view('admin.products.edit', compact('product', 'categories'));
     }
 
     /**
@@ -100,6 +106,7 @@ class ProductController extends Controller
 
         $product = $this->product->find($product);
         $product->update($data);
+        $product->categories()->sync($data['categories']);
 
         flash('Produto Atualizado com Sucesso!')->success();
         return redirect()->route('admin.products.index');
