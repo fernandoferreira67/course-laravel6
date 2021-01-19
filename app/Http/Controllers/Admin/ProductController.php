@@ -58,11 +58,12 @@ class ProductController extends Controller
     {
                //Salvar Usando metodo Sync
         $data = $request->all();
+        $categories = $request->get('categories', null);
 
         //$store = \App\Store::find($data['store']);
         $store = auth()->user()->store;
         $product = $store->products()->create($data);
-        $product->categories()->sync($data['categories']);
+        $product->categories()->sync($categories);
 
         //Requisão para arquivos de images
         if($request->hasFile('photos')){
@@ -115,10 +116,13 @@ class ProductController extends Controller
     public function update(ProductRequest $request, $product)
     {
         $data = $request->all();
+        $categories = $request->get('categories', null);
 
         $product = $this->product->find($product);
         $product->update($data);
-        $product->categories()->sync($data['categories']);
+
+        if(!is_null($categories))
+            $product->categories()->sync($categories);
 
         //Insert Images
         if($request->hasFile('photos')){
