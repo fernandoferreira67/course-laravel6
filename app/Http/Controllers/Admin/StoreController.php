@@ -8,8 +8,16 @@ use Illuminate\Http\Request;
 //Importar Biblioteca para validação dos campos
 use App\Http\Requests\StoreRequest;
 
+//importar Trait
+use App\Traits\UploadTrait;
+
+//Importar Storage
+use Illuminate\Support\Facades\Storage;
+
 class StoreController extends Controller
 {
+    use UploadTrait;
+
     public function __construct()
     {
         $this->middleware('user.has.store')->only(['create','store']);
@@ -53,6 +61,13 @@ class StoreController extends Controller
 
         $data = $request->all();
         $user = auth()->user();
+
+        //Upload Logo
+        if($request->hasFile('logo')) {
+            $data['logo'] = $this->imageUpload($request->file('logo'));
+
+        }
+
         $store = $user->store()->create($data);
 
         flash('Loja Criada com Sucesso')->success();
@@ -69,8 +84,17 @@ class StoreController extends Controller
     public function update(StoreRequest $request, $store) //Alterar variavel de Request
     {
         $data = $request->all(); //Metodo Mass Assign -> Desta Forma guarda os dados no post na variavel data em forma de array associativo
-
         $store = \App\Store::find($store);
+
+         //Upload Logo
+         if($request->hasFile('logo')) {
+             if(Storage::disk('public')->exists($store->logo)){
+                 Storage::disk('public')->delete($store->logo);
+             }
+
+             $data['logo'] = $this->imageUpload($request->file('logo'));
+        }
+
         $store->update($data);
 
         flash('Loja Atualizada com Sucesso')->success();

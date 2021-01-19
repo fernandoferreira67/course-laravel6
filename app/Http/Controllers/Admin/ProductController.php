@@ -4,15 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
 /*Validação de Dados */
 use App\Http\Requests\ProductRequest;
-
 /*Import Model*/
 use App\Product;
+use App\Traits\UploadTrait;
 
 class ProductController extends Controller
 {
+    use UploadTrait;
+
     private $product;
 
     /*Construtor*/
@@ -55,13 +56,24 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
-        //Salvar Usando metodo Sync
+               //Salvar Usando metodo Sync
         $data = $request->all();
 
         //$store = \App\Store::find($data['store']);
         $store = auth()->user()->store;
         $product = $store->products()->create($data);
         $product->categories()->sync($data['categories']);
+
+        //Requisão para arquivos de images
+        if($request->hasFile('photos')){
+
+            //get as images
+            $images = $this->imageUpload($request->file('photos'), 'image');
+
+            //insert images database
+            $product->photos()->createMany($images);
+
+        }
 
         flash('Produto Criado com Sucesso')->success();
         return redirect()->route('admin.products.index');
@@ -108,6 +120,17 @@ class ProductController extends Controller
         $product->update($data);
         $product->categories()->sync($data['categories']);
 
+        //Insert Images
+        if($request->hasFile('photos')){
+
+            //get as images
+            $images = $this->imageUpload($request->file('photos'), 'image');
+
+            //insert images database
+            $product->photos()->createMany($images);
+
+        }
+
         flash('Produto Atualizado com Sucesso!')->success();
         return redirect()->route('admin.products.index');
 
@@ -128,4 +151,6 @@ class ProductController extends Controller
         flash('Produto Removido com Sucesso!')->success();
         return redirect()->route('admin.products.index');
     }
+
+
 }
