@@ -11,12 +11,10 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+Route::get('/', 'HomeController@index')->name('home');
 
 
-Route::get('/model', function () {
+//Route::get('/model', function () {
 
     //Queries
     //Pegar Loja de um usuário
@@ -96,8 +94,8 @@ Route::get('/model', function () {
     return $product->categories;
     */
 
-    return \App\User::all();
-});
+    //return \App\User::all();
+//});
 
 /* Rotas Completas
 Route::get('/admin/stores', 'Admin\\StoreController@index');
