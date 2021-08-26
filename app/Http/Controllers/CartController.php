@@ -18,7 +18,22 @@ class CartController extends Controller
         $product = $request->get('product');
 
         if(session()->has('cart')) {
-            session()->push('cart', $product);
+
+            $products = session()->get('cart');
+
+            $productsSlugs = array_column($products, 'slug');
+
+            if(in_array($product['slug'], $productsSlugs)) {
+
+                $products = $this->productIncrement($product['slug'], $product['amount'], $products);
+
+                session()->push('cart', $product);
+            }else {
+
+                session()->push('cart', $product);
+            }
+
+
         } else {
             //não existe o sessao então crio Array e Dps a sessao
             $products[] = $product;
